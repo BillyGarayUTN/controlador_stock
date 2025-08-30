@@ -502,12 +502,9 @@ class App(tk.Tk):
             cant = simpledialog.askinteger(titulo, "Cantidad:", minvalue=1, parent=self)
             if cant is None:
                 return
-            precio = simpledialog.askfloat(titulo, "Precio unitario (para valuación):", minvalue=0, initialvalue=float(prod["precio"]), parent=self)
-            if precio is None:
-                return
-            nota = simpledialog.askstring(titulo, "Nota (opcional):", parent=self) or None
-            self.db.crear_movimiento(pid, tipo, cant, precio, nota)
-            self.db.actualizar_producto(pid, precio=precio)
+            # Usar el precio actual del producto y sin nota
+            precio = float(prod["precio"])
+            self.db.crear_movimiento(pid, tipo, cant, precio, None)
             self._load_table()
         except Exception as e:
             messagebox.showerror("Error", str(e))
