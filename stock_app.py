@@ -367,7 +367,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title(f"{APP_NAME} — v{VERSION}")
-        self.geometry("1100x540")
+        self.geometry("1250x600")  # Tamaño intermedio para fuente de 12 puntos
         self.db = DB(DB_PATH)
         self._setup_style()
         self._build_ui()
@@ -376,7 +376,21 @@ class App(tk.Tk):
     def _setup_style(self):
         style = ttk.Style(self)
         try:
-            self.tk.call("tk", "scaling", 1.0)
+            # Scaling moderado para fuente de 12 puntos
+            self.tk.call("tk", "scaling", 1.3)
+            
+            # Configurar fuentes personalizadas
+            self.default_font = ("Segoe UI", 12)
+            self.button_font = ("Segoe UI", 12)
+            self.entry_font = ("Segoe UI", 12)
+            
+            # Aplicar fuentes a los estilos de ttk
+            style.configure("TLabel", font=self.default_font)
+            style.configure("TButton", font=self.button_font)
+            style.configure("TEntry", font=self.entry_font)
+            style.configure("Treeview", font=("Segoe UI", 11))
+            style.configure("Treeview.Heading", font=("Segoe UI", 12, "bold"))
+            
         except Exception:
             pass
 
@@ -549,7 +563,7 @@ class App(tk.Tk):
         # Crear ventana personalizada
         dialog = tk.Toplevel(self)
         dialog.title("Opciones de Producto")
-        dialog.geometry("350x200")
+        dialog.geometry("400x240")  # Tamaño intermedio para fuente de 12 puntos
         dialog.resizable(False, False)
         dialog.grab_set()
         dialog.transient(self)
@@ -566,7 +580,7 @@ class App(tk.Tk):
         
         # Información del producto
         info_text = f"Código: {prod['codigo']}\nNombre: {prod['nombre']}\nStock actual: {prod['stock']}"
-        ttk.Label(main_frame, text=info_text, font=('Arial', 10)).pack(pady=(0, 20))
+        ttk.Label(main_frame, text=info_text, font=('Segoe UI', 12)).pack(pady=(0, 20))
         
         # Marco para botones
         btn_frame = ttk.Frame(main_frame)
@@ -584,9 +598,9 @@ class App(tk.Tk):
             dialog.destroy()
         
         # Botones
-        ttk.Button(btn_frame, text="Agregar Stock", command=agregar_stock, width=15).pack(side="left", padx=5)
-        ttk.Button(btn_frame, text="Restar Stock", command=restar_stock, width=15).pack(side="left", padx=5)
-        ttk.Button(btn_frame, text="Cancelar", command=cancelar, width=15).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Agregar Stock", command=agregar_stock, width=16).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Restar Stock", command=restar_stock, width=16).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Cancelar", command=cancelar, width=16).pack(side="left", padx=5)
         
         # Foco en el primer botón
         btn_frame.winfo_children()[0].focus()
