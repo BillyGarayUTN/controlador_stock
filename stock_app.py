@@ -390,6 +390,7 @@ class App(tk.Tk):
         self.e_buscar = ttk.Entry(top, width=30)
         self.e_buscar.pack(side="left")
         self.e_buscar.bind("<KeyRelease>", lambda e: self._load_table())
+        self.e_buscar.delete(0, "end")  # Asegurar que esté vacío
 
         # Botonera principal
         ttk.Button(top, text="Nuevo Producto", command=self._nuevo_producto).pack(side="left", padx=6)
@@ -408,8 +409,9 @@ class App(tk.Tk):
         self.e_scan = ttk.Entry(top, width=24)
         self.e_scan.pack(side="left")
         self.e_scan.bind("<Return>", self._scan_enter)
+        self.e_scan.delete(0, "end")  # Asegurar que esté vacío
 
-        ttk.Button(top, text="Refrescar", command=self._load_table).pack(side="left", padx=6)
+        ttk.Button(top, text="Refrescar", command=self._refrescar).pack(side="left", padx=6)
         ttk.Button(top, text="Exportar a Excel", command=self._exportar_excel).pack(side="left", padx=6)
 
         # Tabla
@@ -457,6 +459,14 @@ class App(tk.Tk):
                 r["stock"],
             ))
         self.status.set(f"{total} productos — Base: {DB_PATH}")
+
+    def _refrescar(self):
+        """Refrescar la aplicación: limpiar campos y recargar tabla"""
+        # Limpiar campos de entrada
+        self.e_buscar.delete(0, "end")
+        self.e_scan.delete(0, "end")
+        # Recargar la tabla
+        self._load_table()
 
     # Acciones
     def _nuevo_producto(self):
