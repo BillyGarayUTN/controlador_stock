@@ -57,8 +57,8 @@ try:
 except Exception:
     openpyxl = None
 
-APP_NAME = "Controlador de Stock"
-VERSION = "1.2.0"
+APP_NAME = "Controlador de Stock - BG" # se cambia el nombre para personalizar
+VERSION = "1.3.0"
 
 def _db_default_path() -> str:
     env = os.environ.get("STOCK_DB")
@@ -66,7 +66,7 @@ def _db_default_path() -> str:
         return env
     if os.name == "nt":
         root = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
-        base_dir = os.path.join(root, "OnceStock")
+        base_dir = os.path.join(root, "BD_inventario")
         os.makedirs(base_dir, exist_ok=True)
         return os.path.join(base_dir, "inventario.db")
     else:
@@ -152,19 +152,7 @@ class DB:
     def _ensure(self):
         with self.connect() as conn:
             conn.executescript(SCHEMA)
-            # seed si está vacío
-            cur = conn.execute("SELECT COUNT(*) AS c FROM productos")
-            if cur.fetchone()["c"] == 0:
-                seed = [
-                    ("94319699", "billy", 1600.00, 40, None),
-                    ("56070724", "evan", 1600.00, 30, None),
-                    ("94466555", "shay",    0.00, 20, None),
-                ]
-                for codigo, nombre, precio, stock, barcode in seed:
-                    conn.execute(
-                        "INSERT INTO productos (codigo, nombre, precio, stock, barcode, creado_en, actualizado_en) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                        (codigo, nombre, precio, stock, barcode, now_str(), now_str())
-                    )
+            # Base de datos arranca vacía - sin datos de ejemplo
 
     # Productos
     def listar_productos(self, filtro:str=""):
