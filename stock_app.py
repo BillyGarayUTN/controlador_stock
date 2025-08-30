@@ -178,11 +178,11 @@ class DB:
         with self.connect() as conn:
             return conn.execute(q, (filtro.strip(), like, like)).fetchall()
 
-    def crear_producto(self, codigo, nombre, precio, stock, barcode=None):
+    def crear_producto(self, codigo, nombre, precio, stock):
         with self.connect() as conn:
             conn.execute(
                 "INSERT INTO productos (codigo, nombre, precio, stock, barcode, creado_en, actualizado_en) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (codigo, nombre, float(precio), int(stock), barcode, now_str(), now_str())
+                (codigo, nombre, float(precio), int(stock), None, now_str(), now_str())
             )
 
     def obtener_producto(self, pid):
@@ -276,12 +276,8 @@ class ProductoForm(tk.Toplevel):
         self.e_stock.insert(0, "0")
         self.e_stock.grid(row=3, column=1, sticky="w", padx=6, pady=6)
 
-        ttk.Label(frm, text="Código de barras (opcional)").grid(row=4, column=0, sticky="e", padx=6, pady=6)
-        self.e_barcode = ttk.Entry(frm, width=30)
-        self.e_barcode.grid(row=4, column=1, sticky="w", padx=6, pady=6)
-
         btns = ttk.Frame(frm)
-        btns.grid(row=5, column=0, columnspan=2, pady=(12,0))
+        btns.grid(row=4, column=0, columnspan=2, pady=(12,0))
         ttk.Button(btns, text="Guardar", command=self._guardar).pack(side="left", padx=6)
         ttk.Button(btns, text="Cancelar", command=self.destroy).pack(side="left", padx=6)
 
@@ -290,7 +286,6 @@ class ProductoForm(tk.Toplevel):
             self.e_nombre.insert(0, producto["nombre"])
             self.e_precio.delete(0, "end"); self.e_precio.insert(0, f'{producto["precio"]:.2f}')
             self.e_stock.delete(0, "end"); self.e_stock.insert(0, str(producto["stock"]))
-            self.e_barcode.insert(0, (producto.get("barcode") if "barcode" in producto.keys() else "") or "")
 
     def _guardar(self):
         codigo = self.e_codigo.get().strip()
@@ -305,7 +300,6 @@ class ProductoForm(tk.Toplevel):
         except ValueError:
             messagebox.showerror("Error", "Stock inválido")
             return
-        barcode = self.e_barcode.get().strip() or None
 
         if not codigo or not nombre:
             messagebox.showerror("Error", "Código y Nombre son obligatorios")
@@ -313,11 +307,11 @@ class ProductoForm(tk.Toplevel):
 
         try:
             if self.producto is None:
-                self.db.crear_producto(codigo, nombre, precio, stock, barcode)
+                self.db.crear_producto(codigo, nombre, precio, stock)
             else:
-                self.db.actualizar_producto(self.producto["id"], codigo=codigo, nombre=nombre, precio=precio, stock=stock, barcode=barcode)
+                self.db.actualizar_producto(self.producto["id"], codigo=codigo, nombre=nombre, precio=precio, stock=stock)
         except sqlite3.IntegrityError as e:
-            messagebox.showerror("Error", f"Código o código de barras duplicado.\n\n{e}")
+            messagebox.showerror("Error", f"Código duplicado.\n\n{e}")
             return
         self.destroy()
 
