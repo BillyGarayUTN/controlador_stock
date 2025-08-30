@@ -519,20 +519,81 @@ class App(tk.Tk):
             return
         prod = self.db.obtener_producto_por_codigo(codigo)
         if not prod:
-            messagebox.showwarning("No encontrado", f"No existe el código {codigo}.")
+            messagebox.showinfo("Producto no encontrado", f"No existe el código {codigo}.")
             self.e_scan.delete(0,"end")
             return
+        
+        # Mostrar opciones para el producto encontrado
         try:
-            cant = simpledialog.askinteger("Salida rápida", f"{prod['nombre']}\nCantidad a restar:", minvalue=1, parent=self)
-            if cant is None:
-                return
-            precio = prod["precio"]
-            self.db.crear_movimiento(prod["id"], "OUT", cant, precio, nota="Salida por escaneo")
-            self._load_table()
+            self._mostrar_opciones_producto(prod)
         except Exception as e:
             messagebox.showerror("Error", str(e))
         finally:
             self.e_scan.delete(0, "end")
+    
+    def _mostrar_opciones_producto(self, prod):
+        """Muestra opciones para un producto escaneado"""
+        import tkinter as tk
+        from tkinter import ttk
+        
+        # Crear ventana personalizada
+        dialog = tk.Toplevel(self)
+        dialog.title("Opciones de Producto")
+        dialog.geometry("350x200")
+        dialog.resizable(False, False)
+        dialog.grab_set()
+        dialog.transient(self)
+        
+        # Centrar la ventana
+        dialog.update_idletasks()
+        x = (dialog.winfo_screenwidth() // 2) - (dialog.winfo_width() // 2)
+        y = (dialog.winfo_screenheight() // 2) - (dialog.winfo_height() // 2)
+        dialog.geometry(f"+{x}+{y}")
+        
+        # Marco principal
+        main_frame = ttk.Frame(dialog, padding=20)
+        main_frame.pack(fill="both", expand=True)
+        
+        # Información del producto
+        info_text = f"Código: {prod['codigo']}\nNombre: {prod['nombre']}\nStock actual: {prod['stock']}"
+        ttk.Label(main_frame, text=info_text, font=('Arial', 10)).pack(pady=(0, 20))
+        
+        # Marco para botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady=10)
+        
+        def agregar_stock():
+            dialog.destroy()
+            self._ejecutar_movimiento_escaneado(prod, "IN")
+        
+        def restar_stock():
+            dialog.destroy()
+            self._ejecutar_movimiento_escaneado(prod, "OUT")
+        
+        def cancelar():
+            dialog.destroy()
+        
+        # Botones
+        ttk.Button(btn_frame, text="Agregar Stock", command=agregar_stock, width=15).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Restar Stock", command=restar_stock, width=15).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Cancelar", command=cancelar, width=15).pack(side="left", padx=5)
+        
+        # Foco en el primer botón
+        btn_frame.winfo_children()[0].focus()
+    
+    def _ejecutar_movimiento_escaneado(self, prod, tipo):
+        """Ejecuta movimiento de stock para producto escaneado"""
+        titulo = "Agregar Stock" if tipo == "IN" else "Restar Stock"
+        try:
+            cant = simpledialog.askinteger(titulo, "Cantidad:", minvalue=1, parent=self)
+            if cant is None:
+                return
+            precio = float(prod["precio"])
+            nota = "Movimiento por escaneo"
+            self.db.crear_movimiento(prod["id"], tipo, cant, precio, nota)
+            self._load_table()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
     def _exportar_excel(self):
         path = filedialog.asksaveasfilename(
