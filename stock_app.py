@@ -551,7 +551,7 @@ class App(tk.Tk):
         # Crear ventana personalizada
         dialog = tk.Toplevel(self)
         dialog.title("Opciones de Producto")
-        dialog.geometry("400x240")  # Tamaño intermedio para fuente de 12 puntos
+        dialog.geometry("500x240")  # Ancho aumentado para acomodar los 3 botones
         dialog.resizable(False, False)
         dialog.grab_set()
         dialog.transient(self)
@@ -585,10 +585,15 @@ class App(tk.Tk):
         def cancelar():
             dialog.destroy()
         
-        # Botones
-        ttk.Button(btn_frame, text="Agregar Stock", command=agregar_stock, width=16).pack(side="left", padx=5)
-        ttk.Button(btn_frame, text="Restar Stock", command=restar_stock, width=16).pack(side="left", padx=5)
-        ttk.Button(btn_frame, text="Cancelar", command=cancelar, width=16).pack(side="left", padx=5)
+        # Botones usando grid para mejor control del layout
+        ttk.Button(btn_frame, text="Agregar Stock", command=agregar_stock, width=14).grid(row=0, column=0, padx=8)
+        ttk.Button(btn_frame, text="Restar Stock", command=restar_stock, width=14).grid(row=0, column=1, padx=8)
+        ttk.Button(btn_frame, text="Cancelar", command=cancelar, width=14).grid(row=0, column=2, padx=8)
+        
+        # Centrar el marco de botones
+        btn_frame.grid_columnconfigure(0, weight=1)
+        btn_frame.grid_columnconfigure(1, weight=1)
+        btn_frame.grid_columnconfigure(2, weight=1)
         
         # Foco en el primer botón
         btn_frame.winfo_children()[0].focus()
