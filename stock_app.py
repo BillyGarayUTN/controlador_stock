@@ -387,34 +387,38 @@ class App(tk.Tk):
         top = ttk.Frame(self, padding=(8,6,8,0))
         top.pack(fill="x")
 
-        # Buscar
-        ttk.Label(top, text="Buscar:").pack(side="left", padx=(0,6))
-        self.e_buscar = ttk.Entry(top, width=30)
-        self.e_buscar.pack(side="left")
-        self.e_buscar.bind("<KeyRelease>", lambda e: self._load_table())
-        self.e_buscar.delete(0, "end")  # Asegurar que esté vacío
+        # Fila 1 (arriba): Escanear / Código + Refrescar + Exportar (azules)
+        row2 = ttk.Frame(top)
+        row2.pack(fill="x")
 
-        # Botonera principal
-        ttk.Button(top, text="Nuevo Producto", command=self._nuevo_producto).pack(side="left", padx=6)
-        ttk.Button(top, text="Editar Producto", command=self._editar_producto).pack(side="left", padx=6)
-        ttk.Button(top, text="Eliminar Producto", command=self._eliminar_producto).pack(side="left", padx=6)
-
-        ttk.Separator(top, orient="vertical").pack(side="left", fill="y", padx=8, pady=2)
-
-        ttk.Button(top, text="Agregar Stock", command=lambda: self._mov_stock("IN")).pack(side="left", padx=6)
-        ttk.Button(top, text="Restar Stock", command=lambda: self._mov_stock("OUT")).pack(side="left", padx=6)
-        ttk.Button(top, text="Movimientos", command=self._abrir_movimientos).pack(side="left", padx=6)
-
-        ttk.Separator(top, orient="vertical").pack(side="left", fill="y", padx=8, pady=2)
-
-        ttk.Label(top, text="Escanear / Código:").pack(side="left", padx=(0,6))
-        self.e_scan = ttk.Entry(top, width=24)
+        ttk.Label(row2, text="Escanear / Código:").pack(side="left", padx=(0,6))
+        self.e_scan = ttk.Entry(row2, width=24)
         self.e_scan.pack(side="left")
         self.e_scan.bind("<Return>", self._scan_enter)
         self.e_scan.delete(0, "end")  # Asegurar que esté vacío
 
-        ttk.Button(top, text="Refrescar", command=self._refrescar).pack(side="left", padx=6)
-        ttk.Button(top, text="Exportar a Excel", command=self._exportar_excel).pack(side="left", padx=6)
+        ttk.Button(row2, text="Refrescar", command=self._refrescar).pack(side="left", padx=6)
+        ttk.Button(row2, text="Exportar a Excel", command=self._exportar_excel).pack(side="left", padx=6)
+
+        # Fila 2 (abajo): Buscar + CRUD + Stock + Movimientos (rojos)
+        row1 = ttk.Frame(top)
+        row1.pack(fill="x", pady=(6,0))
+
+        ttk.Label(row1, text="Buscar:").pack(side="left", padx=(0,6))
+        self.e_buscar = ttk.Entry(row1, width=30)
+        self.e_buscar.pack(side="left")
+        self.e_buscar.bind("<KeyRelease>", lambda e: self._load_table())
+        self.e_buscar.delete(0, "end")  # Asegurar que esté vacío
+
+        ttk.Button(row1, text="Nuevo Producto", command=self._nuevo_producto).pack(side="left", padx=6)
+        ttk.Button(row1, text="Editar Producto", command=self._editar_producto).pack(side="left", padx=6)
+        ttk.Button(row1, text="Eliminar Producto", command=self._eliminar_producto).pack(side="left", padx=6)
+
+        ttk.Separator(row1, orient="vertical").pack(side="left", fill="y", padx=8, pady=2)
+
+        ttk.Button(row1, text="Agregar Stock", command=lambda: self._mov_stock("IN")).pack(side="left", padx=6)
+        ttk.Button(row1, text="Restar Stock", command=lambda: self._mov_stock("OUT")).pack(side="left", padx=6)
+        ttk.Button(row1, text="Movimientos", command=self._abrir_movimientos).pack(side="left", padx=6)
 
         # Tabla
         cols = ("codigo","nombre","precio","stock")
