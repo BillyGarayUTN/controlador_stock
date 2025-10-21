@@ -58,7 +58,7 @@ except Exception:
     openpyxl = None
 
 APP_NAME = "Controlador de Stock - BG" # se cambia el nombre para personalizar
-VERSION = "1.3.0"
+VERSION = "2.1.0"
 
 def _db_default_path() -> str:
     env = os.environ.get("STOCK_DB")
